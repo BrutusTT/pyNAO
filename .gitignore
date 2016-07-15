@@ -4,3 +4,10 @@
 .project
 
 .pydevproject
+
+pyNAO.egg-info
+
+build
+
+dist
+
