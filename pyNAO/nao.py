@@ -21,7 +21,9 @@ import time
 import sys
 
 import motion
+import vision_definitions
 from naoqi import ALProxy
+
 
 import numpy as np
 
@@ -54,7 +56,9 @@ class Nao(object):
         self._port          = port
         self._proxy_motion  = None
         self._proxy_posture = None
+        self._proxy_cam     = None
         self._stiffness     = 0.0
+        self._videoClient   = None
 
         self.initialize()
         
@@ -88,6 +92,19 @@ class Nao(object):
                 print "Error was: ", e
                 sys.exit()
         return self._proxy_posture
+
+
+    @property
+    def camProxy(self):
+        if self._proxy_cam is None:
+            # Set camProxy
+            try:
+                self._proxy_cam = ALProxy("ALVideoDevice", self._ip, self._port)
+            except Exception as e:
+                print "Could not create proxy to ALVideoDevice"
+                print "Error was: ", e
+                sys.exit()
+        return self._proxy_cam
 
 
     @property
@@ -171,6 +188,25 @@ class Nao(object):
     def getPosition(self, joint):
         return self.motionProxy.getPosition(joint, Nao.Frame, True)
 
+
+    def startVision(self):
+        self.camProxy.setActiveCamera(1)
+        self._videoClient = self.camProxy.subscribe( '_client3', 
+                                                     vision_definitions.kQVGA,
+                                                     vision_definitions.kRGBColorSpace,
+                                                     30 )
+
+    def stopVision(self):
+        if self._videoClient:
+            self.camProxy.unsubscribe(self._videoClient)
+
+
+    def getImage(self):
+        return self.camProxy.getImageRemote(self._videoClient)
+
+
+    def __del__(self):
+        self.stopVision()
 
 
 ####################################################################################################

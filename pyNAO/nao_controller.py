@@ -31,35 +31,35 @@ class NaoController(BaseModule):
         """
         reply = 'nack'
 
-        if command.get(0).toString() == 'point':
-
-            arm   = command.get(1).toString()
-
-            if arm not in ['left', 'right']:
-                reply += ' message format for point: point <"left"|"right"> (x y z)'
-
-            else:
-                _list = command.get(2).asList()
-                xyz   = [ _list.get(0).asDouble(), 
-                          _list.get(1).asDouble(),
-                          _list.get(2).asDouble() ] 
-                self.nao.point('LArm' if arm == 'left' else 'RArm', xyz)
-                reply = 'ack'
-
-        elif command.get(0).toString() == 'look':
-                _list = command.get(1).asList()
-                xyz = [ _list.get(0).asDouble(), 
-                        _list.get(1).asDouble(),
-                        _list.get(2).asDouble(),
-                        ] 
-                
-                self.nao.look(xyz)
-                reply = 'ack'
-
+        try:
+            if command.get(0).toString() == 'point':
+    
+                arm   = command.get(1).toString()
+    
+                if arm not in ['left', 'right']:
+                    reply += ' message format for point: point <"left"|"right"> x y z'
+    
+                else:
+                    xyz   = [ command.get(2).asDouble(), 
+                              command.get(3).asDouble(),
+                              command.get(4).asDouble() ] 
+                    self.nao.point('LArm' if arm == 'left' else 'RArm', xyz)
+                    reply = 'ack'
+    
+            elif command.get(0).toString() == 'look':
+                    xyz = [ command.get(1).asDouble(), 
+                            command.get(2).asDouble(),
+                            command.get(3).asDouble(),
+                            ] 
+                    
+                    self.nao.look(xyz)
+                    reply = 'ack'
+        except Exception as e:
+            print e
 
 
         # reply with success
-        reply.addString(reply)
+#        reply.addString('ack')
         return True
 
 
