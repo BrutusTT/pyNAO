@@ -74,7 +74,6 @@ class BaseModule(yarp.RFModule):
 
     def close(self):
         self.rpc_port.close()
-        self.ezb.close()
         return True
 
 
@@ -98,7 +97,7 @@ def createArgParser():
     
     @return Argument Parser object
     """
-    parser = argparse.ArgumentParser(description='Create a JDModule to control the JD robot.')
+    parser = argparse.ArgumentParser(description='Create a NaoModule to control the Nao robot.')
     parser.add_argument( '-i', '--ip', 
                          dest       = 'ip', 
                          default    = str(BaseModule.TCP_IP),
